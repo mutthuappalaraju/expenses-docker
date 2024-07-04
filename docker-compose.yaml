@@ -1,15 +1,17 @@
+#version: '3.8'
+name: expense
 networks:
   default:
-    external:
-      name: expenses
+    name: expense
 volumes:
   mysql:
-
+    #external: true # if true, you need to create manually
+       # docker volume create myqsl
 services:
-  # docker run -d --name mongodb --network=roboshop mongodb:1
   mysql:
-    image: mysql:v1
-    container_name: mysql
+    #image: mysql:v1
+    image: mutthu2512/mysql:v1
+    container_name: mysql # --name mysql
     environment:
       - MYSQL_ROOT_PASSWORD=ExpenseApp@1
       - MYSQL_USER=expense
@@ -18,25 +20,19 @@ services:
     volumes:
     - source: mysql
       target: /var/lib/mysql
-      type: volume
-    # networks:
-    # - roboshop
-
-  
-
+      type: volume # -v volume-name:/path/in/container
   backend:
-    image: backend:v1
+    #image: backend:v1
+    image: mutthu2512/backend:v1
     container_name: backend
-    depends_on:
+    command: sh -c "sleep 20 && node /opt/server/index.js"
+    depends_on: 
     - mysql
-    
-
   frontend:
-    image: frontend:v1
+    #image: frontend:v1
+    image: mutthu2512/frontend:v1
     container_name: frontend
     depends_on:
     - backend
     ports:
     - "80:80"
-
-  
